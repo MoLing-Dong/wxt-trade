@@ -4,13 +4,13 @@ import { defineConfig } from "wxt";
 export default defineConfig({
   extensionApi: "chrome",
   modules: ["@wxt-dev/module-vue"],
-  // 默认打开地址
   manifest: {
-    name: "My Extension",
-    description: "A custom browser extension",
+    name: "Tradesparq",
+    description: "Tradesparq Get All Data",
     version: "1.0",
     permissions: ["storage", "http://*/*", "https://*/*"],
   },
+  // 默认打开地址
   runner: {
     startUrls: ["https://baidu.com"],
   },

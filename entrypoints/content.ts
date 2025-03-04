@@ -20,8 +20,6 @@ export default defineContentScript({
   runAt: "document_idle", // 等待页面加载完成再运行
 
   main() {
-    console.log("Content script loaded on:", window.location.href);
-
     // 注册消息监听器
     browser.runtime.onMessage.addListener(
       async (message: Message, sender, sendResponse) => {
@@ -30,17 +28,10 @@ export default defineContentScript({
 
         try {
           // 处理提取表格数据的请求
-          if (message.type === "extract_table_data") {
+          if (message.type === "getTable") {
             const response = await handleExtractTableData();
             sendResponse(response);
           }
-
-          // 处理来自 popup 的消息
-          else if (message.type === "popup-message") {
-            const response = handlePopupMessage(message);
-            sendResponse(response);
-          }
-
           // 默认响应（未识别的消息类型）
           else {
             const response = handleUnknownMessage();
@@ -122,36 +113,16 @@ function handleErrorResponse(error: any): void {
  */
 function extractTableData(): Array<{ text: string; href: string }> {
   try {
-    // 示例：提取所有 <a> 标签的数据
-    const links = Array.from(document.querySelectorAll("a")).map((a) => ({
-      text: a.textContent?.trim() || "",
-      href: a.href,
-    }));
+    console.log("Extracting table data...");
 
     // 如果需要提取真正的表格数据，可以替换为以下逻辑：
-    /*
-    const tables = document.querySelectorAll('table');
-    const tableData: Array<{ text: string; href: string }> = [];
-    for (const table of tables) {
-      const rows = table.querySelectorAll('tr');
-      for (const row of rows) {
-        const cells = row.querySelectorAll('td, th');
-        for (const cell of cells) {
-          const link = cell.querySelector('a');
-          if (link) {
-            tableData.push({
-              text: link.textContent?.trim() || '',
-              href: link.href,
-            });
-          }
-        }
-      }
-    }
-    return tableData;
-    */
 
-    console.log("Extracted table data:", links);
-    return links;
+    const tables = document.querySelectorAll("table");
+    tables.forEach((table) => {
+      console.log("Table found:", table);
+    });
+    // table 转为 excel
+    return [];
   } catch (error) {
     console.error("Error extracting table data:", error);
     return [];

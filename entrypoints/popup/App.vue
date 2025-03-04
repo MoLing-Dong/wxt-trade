@@ -2,6 +2,7 @@
 // 导入必要的依赖
 import { ref, onBeforeUpdate } from 'vue';
 import HelloWorld from '@/components/HelloWorld.vue';
+import content from '../content';
 
 // 定义响应式数据，用于存储表格数据
 const tableData = ref<Array<{ text: string; href: string }>>([]);
@@ -9,33 +10,6 @@ const tableData = ref<Array<{ text: string; href: string }>>([]);
 // 在组件更新前执行，检查所有标签页并向内容脚本发送消息
 onBeforeUpdate(async () => {
     console.log('Popup mounted or updated!');
-    try {
-        // 获取所有打开的标签页
-        const allTabs = await browser.tabs.query({});
-        // 定义内容脚本的匹配模式，适用于所有 HTTP/HTTPS 页面
-        const contentScriptMatches = new MatchPattern('*://*/*');
-        // 筛选出与内容脚本匹配的标签页
-        const contentScriptTabs = allTabs.filter(
-            (tab) =>
-                tab.id != null &&
-                tab.url != null &&
-                contentScriptMatches.includes(tab.url)
-        );
-
-        // 向所有匹配的标签页发送消息，并收集响应
-        const results = await Promise.all(
-            contentScriptTabs.map(async (tab) => {
-                const response = await browser.tabs.sendMessage(
-                    tab.id!, // 使用非空断言，确保 tab.id 存在
-                    'background-message is working!' // 发送简单的字符串消息
-                );
-                return { tab: tab.id, response };
-            })
-        );
-        console.log('Results from content scripts:', results);
-    } catch (error) {
-        console.error('Error in onBeforeUpdate:', error);
-    }
 });
 
 /**
@@ -85,7 +59,9 @@ const handleClick = async () => {
             // 向当前标签页的内容脚本发送消息
             const contentResponse = await browser.tabs.sendMessage(
                 currentTab.id,
-                { type: 'popup-message', content: 'Hello from popup!' }
+                {
+                    type: 'popup-message', methods: "getTable", content: 'Hello from popup!'
+                }
             );
             console.log('Popup收到内容脚本响应:', contentResponse);
         } else {

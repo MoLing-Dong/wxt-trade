@@ -52,7 +52,7 @@ export default defineBackground(() => {
               // 向内容脚本发送消息提取表格数据
               browser.tabs.sendMessage(
                 tab.id,
-                { type: "extract_table_data" },
+                { type: "getTable" },
                 (response) => {
                   if (browser.runtime.lastError) {
                     console.error(
